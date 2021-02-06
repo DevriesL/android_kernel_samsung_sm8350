@@ -22,7 +22,7 @@ static inline void get_monotonic_boottime(struct timespec *ts)
         *ts = ktime_to_timespec(ktime_get_boottime());
 }
 
-struct gendisk *get_internal_gendisk()
+static struct gendisk *get_internal_gendisk(void)
 {
 	dev_t dev;
 	struct gendisk *gd;

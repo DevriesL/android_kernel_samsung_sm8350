@@ -1143,7 +1143,7 @@ static void print_sensor_dump(struct adsp_data *data, int sensor)
 	}
 }
 
-void print_ssr_history()
+static void print_ssr_history(void)
 {
 	int i;
 

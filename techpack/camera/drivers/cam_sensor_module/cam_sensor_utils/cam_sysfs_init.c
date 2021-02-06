@@ -4368,7 +4368,7 @@ static void svc_cam_release(struct device *dev)
 	kfree(dev);
 }
 
-int svc_cheating_prevent_device_file_create()
+static int svc_cheating_prevent_device_file_create(void)
 {
 	struct kernfs_node *svc_sd;
 	struct kobject *data;
