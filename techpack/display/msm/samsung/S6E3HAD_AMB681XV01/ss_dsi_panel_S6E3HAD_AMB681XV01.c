@@ -507,7 +507,11 @@ u8 cmdid_aor_global[VRR_MAX][3] = {
 };
 
 u8 cmdid_aor_normal[6] = {
+#ifdef CONFIG_HYBRID_DC_DIMMING
+	0x00, 0x2B, 0x00, 0x2B, 0x00, 0x2B
+#else
 	0x02, 0x07, 0x02, 0x07, 0x02, 0x07
+#endif
 };
 
 u8 cmdid_aor_hmd[6] = {
