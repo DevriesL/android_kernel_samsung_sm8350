@@ -19833,6 +19833,137 @@ static char DSI_HMT_COLOR_TEMP_7500K_MDNIE_3[] = {
 	//end
 };
 
+#ifdef CONFIG_MDNIE_TRUE_COLOR
+static unsigned char DSI_TRUE_COLOR_MDNIE_1[] = {
+	//start
+	0xDF,
+	0x00, //linear_on ascr_skin_on 0000 0000
+	0x6a, //ascr_skin_cb
+	0x9a, //ascr_skin_cr
+	0x25, //ascr_dist_up
+	0x1a, //ascr_dist_down
+	0x16, //ascr_dist_right
+	0x2a, //ascr_dist_left
+	0x00, //ascr_div_up 20
+	0x37,
+	0x5a,
+	0x00, //ascr_div_down
+	0x4e,
+	0xc5,
+	0x00, //ascr_div_right
+	0x5d,
+	0x17,
+	0x00, //ascr_div_left
+	0x30,
+	0xc3,
+	0xff, //ascr_skin_Rr
+	0x00, //ascr_skin_Rg
+	0x00, //ascr_skin_Rb
+	0xff, //ascr_skin_Yr
+	0xff, //ascr_skin_Yg
+	0x00, //ascr_skin_Yb
+	0xff, //ascr_skin_Mr
+	0x00, //ascr_skin_Mg
+	0xff, //ascr_skin_Mb
+	0xff, //ascr_skin_Wr
+	0xff, //ascr_skin_Wg
+	0xff, //ascr_skin_Wb
+	0x00, //ascr_Cr
+	0xff, //ascr_Rr
+	0xff, //ascr_Cg
+	0x00, //ascr_Rg
+	0xff, //ascr_Cb
+	0x00, //ascr_Rb
+	0xff, //ascr_Mr
+	0x00, //ascr_Gr
+	0x00, //ascr_Mg
+	0xff, //ascr_Gg
+	0xff, //ascr_Mb
+	0x00, //ascr_Gb
+	0xff, //ascr_Yr
+	0x00, //ascr_Br
+	0xff, //ascr_Yg
+	0x00, //ascr_Bg
+	0x00, //ascr_Yb
+	0xff, //ascr_Bb
+	0xff, //ascr_Wr
+	0x00, //ascr_Kr
+	0xff, //ascr_Wg
+	0x00, //ascr_Kg
+	0xff, //ascr_Wb
+	0x00, //ascr_Kb
+	0x00, //ascr_gamma_w
+	0x00, //ascr_gamma_x0
+	0x00,
+	0x00, //ascr_gamma_x1
+	0x80,
+	0x01, //ascr_gamma_x2
+	0x00,
+	0x01, //ascr_gamma_x3
+	0x80,
+	0x02, //ascr_gamma_x4
+	0x00,
+	0x02, //ascr_gamma_x5
+	0x80,
+	0x03, //ascr_gamma_x6
+	0x00,
+	0x03, //ascr_gamma_x7
+	0x80,
+	0x04, //ascr_gamma_x8
+	0x00,
+	0x04, //ascr_gamma_x9
+	0x80,
+	0x05, //ascr_gamma_x10
+	0x00,
+	0x05, //ascr_gamma_x11
+	0x80,
+	0x06, //ascr_gamma_x12
+	0x00,
+	0x06, //ascr_gamma_x13
+	0x80,
+	0x07, //ascr_gamma_x14
+	0x00,
+	0x07, //ascr_gamma_x15
+	0x80,
+	0x08, //ascr_gamma_x16
+	0x00,
+	0x00, //ascr_gamma_y0
+	0x00,
+	0x00, //ascr_gamma_y1
+	0x80,
+	0x01, //ascr_gamma_y2
+	0x00,
+	0x01, //ascr_gamma_y3
+	0x80,
+	0x02, //ascr_gamma_y4
+	0x00,
+	0x02, //ascr_gamma_y5
+	0x80,
+	0x03, //ascr_gamma_y6
+	0x00,
+	0x03, //ascr_gamma_y7
+	0x80,
+	0x04, //ascr_gamma_y8
+	0x00,
+	0x04, //ascr_gamma_y9
+	0x80,
+	0x05, //ascr_gamma_y10
+	0x00,
+	0x05, //ascr_gamma_y11
+	0x80,
+	0x06, //ascr_gamma_y12
+	0x00,
+	0x06, //ascr_gamma_y13
+	0x80,
+	0x07, //ascr_gamma_y14
+	0x00,
+	0x07, //ascr_gamma_y15
+	0x80,
+	0x08, //ascr_gamma_y16
+	0x00,
+};
+#endif
+
 static char DSI_AFC[] = {
 	0xE2,
 	0x00,
@@ -20260,7 +20391,11 @@ static struct dsi_cmd_desc DSI_UI_DYNAMIC_MDNIE[] = {
 
 static struct dsi_cmd_desc DSI_UI_STANDARD_MDNIE[] = {
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(level_1_key_on), level_1_key_on, 0, NULL}, false, 0, level_1_key_on,},
+#ifdef CONFIG_MDNIE_TRUE_COLOR
+	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_TRUE_COLOR_MDNIE_1), DSI_TRUE_COLOR_MDNIE_1, 0, NULL}, false, 0, DSI_TRUE_COLOR_MDNIE_1,},
+#else
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_STANDARD_MDNIE_1), DSI_UI_STANDARD_MDNIE_1, 0, NULL}, false, 0, DSI_UI_STANDARD_MDNIE_1,},
+#endif
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_STANDARD_MDNIE_2), DSI_UI_STANDARD_MDNIE_2, 0, NULL}, false, 0, DSI_UI_STANDARD_MDNIE_2,},
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_STANDARD_MDNIE_3), DSI_UI_STANDARD_MDNIE_3, 0, NULL}, false, 0, DSI_UI_STANDARD_MDNIE_3,},
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_AFC), DSI_AFC, 0, NULL}, false, 0, DSI_AFC,},
@@ -20269,7 +20404,11 @@ static struct dsi_cmd_desc DSI_UI_STANDARD_MDNIE[] = {
 
 static struct dsi_cmd_desc DSI_UI_NATURAL_MDNIE[] = {
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(level_1_key_on), level_1_key_on, 0, NULL}, false, 0, level_1_key_on,},
+#ifdef CONFIG_MDNIE_TRUE_COLOR
+	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_TRUE_COLOR_MDNIE_1), DSI_TRUE_COLOR_MDNIE_1, 0, NULL}, false, 0, DSI_TRUE_COLOR_MDNIE_1,},
+#else
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_NATURAL_MDNIE_1), DSI_UI_NATURAL_MDNIE_1, 0, NULL}, false, 0, DSI_UI_NATURAL_MDNIE_1,},
+#endif
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_NATURAL_MDNIE_2), DSI_UI_NATURAL_MDNIE_2, 0, NULL}, false, 0, DSI_UI_NATURAL_MDNIE_2,},
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_NATURAL_MDNIE_3), DSI_UI_NATURAL_MDNIE_3, 0, NULL}, false, 0, DSI_UI_NATURAL_MDNIE_3,},
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_AFC), DSI_AFC, 0, NULL}, false, 0, DSI_AFC,},
@@ -20278,7 +20417,11 @@ static struct dsi_cmd_desc DSI_UI_NATURAL_MDNIE[] = {
 
 static struct dsi_cmd_desc DSI_UI_AUTO_MDNIE[] = {
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(level_1_key_on), level_1_key_on, 0, NULL}, false, 0, level_1_key_on,},
+#ifdef CONFIG_MDNIE_TRUE_COLOR
+	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_TRUE_COLOR_MDNIE_1), DSI_TRUE_COLOR_MDNIE_1, 0, NULL}, false, 0, DSI_TRUE_COLOR_MDNIE_1,},
+#else
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_AUTO_MDNIE_1), DSI_UI_AUTO_MDNIE_1, 0, NULL}, false, 0, DSI_UI_AUTO_MDNIE_1,},
+#endif
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_AUTO_MDNIE_2), DSI_UI_AUTO_MDNIE_2, 0, NULL}, false, 0, DSI_UI_AUTO_MDNIE_2,},
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_UI_AUTO_MDNIE_3), DSI_UI_AUTO_MDNIE_3, 0, NULL}, false, 0, DSI_UI_AUTO_MDNIE_3,},
 	{{0, MIPI_DSI_DCS_LONG_WRITE, 0, 0, 0, sizeof(DSI_AFC), DSI_AFC, 0, NULL}, false, 0, DSI_AFC,},

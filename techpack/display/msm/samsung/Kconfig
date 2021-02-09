@@ -46,3 +46,11 @@ config HYBRID_DC_DIMMING
 	---help---
 	Forced dc dimming mode by hijack panel
 	gamma and mdnie color controller.
+
+config MDNIE_TRUE_COLOR
+	depends on DISPLAY_SAMSUNG
+	bool "MDNIE TRUE COLOR MODE"
+	default n
+	---help---
+	Disable mDNIe unreal color processing to 
+	display true color in UI.
