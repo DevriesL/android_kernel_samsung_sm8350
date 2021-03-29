@@ -149,3 +149,9 @@ x509.genkey
 
 # Output directory
 /out/
+
+# Build Log
+build.txt
+
+# Python Cache
+__pycache__
