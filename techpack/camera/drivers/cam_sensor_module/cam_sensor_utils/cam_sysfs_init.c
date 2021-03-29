@@ -2964,12 +2964,16 @@ static ssize_t rear_actuator_power_store(struct device *dev,
 				if (g_a_ctrls[index]->use_mcu)
 				{
 					mutex_lock(&(g_o_ctrl->ois_mutex));
-					rc = cam_ois_power_down(g_o_ctrl);
+					rc |= cam_ois_power_down(g_o_ctrl);
 					mutex_unlock(&(g_o_ctrl->ois_mutex));
 				}
 				else
 #endif
+				{
+					mutex_lock(&(g_a_ctrls[index]->actuator_mutex));
 					rc |= cam_actuator_power_down(g_a_ctrls[index]);
+					mutex_unlock(&(g_a_ctrls[index]->actuator_mutex));
+				}
 				pr_info("%s: actuator %u power down", __func__, index);
 			}
 		}
@@ -3003,7 +3007,11 @@ static ssize_t rear_actuator_power_store(struct device *dev,
 				}
 				else
 #endif
-				cam_actuator_power_up(g_a_ctrls[index]);
+				{
+					mutex_lock(&(g_a_ctrls[index]->actuator_mutex));
+					cam_actuator_power_up(g_a_ctrls[index]);
+					mutex_unlock(&(g_a_ctrls[index]->actuator_mutex));
+				}
 				cam_actuator_default_init_setting(g_a_ctrls[index]);
 				pr_info("%s: actuator %u power up", __func__, index);
 			}
@@ -4368,7 +4376,7 @@ static void svc_cam_release(struct device *dev)
 	kfree(dev);
 }
 
-static int svc_cheating_prevent_device_file_create(void)
+int svc_cheating_prevent_device_file_create()
 {
 	struct kernfs_node *svc_sd;
 	struct kobject *data;
