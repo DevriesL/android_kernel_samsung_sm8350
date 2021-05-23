@@ -11522,6 +11522,7 @@
 				samsung,support_gamma_mode2;
 				samsung,elvss_interpolation_temperature = <0xfffffff1>;
 				samsung,support_factory_panel_swap;
+				samsung,support_lp_rx_err_recovery;
 				samsung,esc-clk-128M;
 				samsung,support_gpara;
 				samsung,pointing_gpara;
@@ -11599,7 +11600,7 @@
 				samsung,lpm_30nit_tx_cmds_revA = [29 00 00 00 00 00 07 c7 01 06 bb 02 00 c0];
 				samsung,lpm_10nit_tx_cmds_revA = [29 00 00 00 00 00 07 c7 01 0a b4 02 00 c0];
 				samsung,lpm_2nit_tx_cmds_revA = [29 00 00 00 00 00 07 c7 01 0c 4c 02 00 c0];
-				samsung,lpm_brightnes_tx_cmds_revA = [29 00 00 00 00 00 03 f0 5a 5a 29 00 00 00 00 00 04 b0 00 04 bd 29 00 00 00 00 00 03 bd 00 00 29 00 00 00 00 00 04 b0 00 53 c7 29 00 00 00 00 00 07 c7 01 00 c0 02 00 c0 29 00 00 00 00 00 02 f7 0f 29 00 00 00 00 00 03 f0 a5 a5];
+				samsung,lpm_brightnes_tx_cmds_revA = [29 00 00 00 00 00 03 f0 5a 5a 29 00 00 00 00 00 04 b0 00 04 bd 29 00 00 00 00 00 03 bd 00 00 29 00 00 00 00 00 04 b0 00 53 c7 29 00 00 00 00 00 07 c7 01 00 c0 02 00 c0 29 00 00 00 00 00 04 b0 03 e3 c6 29 00 00 00 00 00 02 c6 00 29 00 00 00 00 00 02 f7 0f 29 00 00 00 00 00 03 f0 a5 a5];
 				samsung,lpm_ctrl_hlpm_off_tx_cmds_revA = [29 00 00 00 00 00 02 bb 01];
 				samsung,lpm_ctrl_alpm_off_tx_cmds_revA = [29 00 00 00 00 00 02 bb 03];
 				samsung,lpm-init-delay-ms = <0x7c>;
@@ -11610,6 +11611,10 @@
 				samsung,brightdot_off_tx_cmds_revA = [29 00 00 00 00 00 03 f0 5a 5a 29 00 00 00 00 00 04 b0 00 53 c7 29 00 00 00 00 00 07 c7 00 02 07 02 00 c0 29 00 00 00 00 00 02 f7 0f 29 01 00 00 00 00 03 f0 a5 a5];
 				samsung,dia_on_tx_cmds_revA = <0x29000000 0x3f0 0x5a5a2900 0x0 0x4b0003e 0x91290000 0x2 0x91022900 0x0 0x3f0a55a>;
 				samsung,dia_off_tx_cmds_revA = <0x29000000 0x3f0 0x5a5a2900 0x0 0x4b0003e 0x91290000 0x2 0x91002900 0x0 0x3f0a55a>;
+				samsung,flash_gamma_pre_tx_cmds1_revA = [39 01 00 00 00 00 03 9f a5 a5 39 01 00 00 00 00 03 f0 5a 5a 39 01 00 00 00 00 03 f1 f1 a2 39 01 00 00 00 00 02 c0 02 39 01 00 00 01 00 04 71 03 00 00 39 01 00 00 00 00 0a c1 00 00 06 00 00 00 00 00 00 39 01 00 00 01 00 02 c0 03 29 00 00 00 00 00 0a c1 00 00 01 00 02 00 80 00 00 39 01 00 00 0a 00 02 c0 03];
+				samsung,flash_gamma_post_tx_cmds_revA = [39 01 00 00 00 00 02 c0 00 39 01 00 00 00 00 03 9f 5a 5a 39 01 00 00 00 00 03 f0 a5 a5 39 01 00 00 00 00 03 f1 a5 a5];
+				samsung,flash_gamma_tx_cmds_revA = [39 01 00 00 00 00 0a c1 00 00 6b 0e 00 00 c0 00 46 39 01 00 00 00 00 02 c0 03];
+				samsung,flash_gamma_rx_cmds_revA = [06 01 00 00 00 00 01 6e 01 00 46];
 				samsung,enter_hbm_ce_lux = <0x9c40>;
 				samsung,acl_on_tx_cmds_revA = [29 00 00 00 00 00 04 b0 02 91 c7 29 00 00 00 00 00 07 c7 55 80 01 29 4d 9b 29 00 00 00 00 00 04 b0 02 9f c7 29 00 00 00 00 00 05 c7 00 00 1f 00 29 00 00 00 00 00 02 55 01];
 				samsung,acl_off_tx_cmds_revA = [29 00 00 00 00 00 02 55 00];
@@ -11625,8 +11630,6 @@
 				samsung,gamma_mode2_hbm_tx_cmds_revA = [29 00 00 00 00 00 04 b0 00 0c c2 29 00 00 00 00 00 02 c2 60 29 00 00 00 00 00 04 b0 00 04 92 29 00 00 00 00 00 02 92 14 29 00 00 00 00 00 02 53 e0 29 00 00 00 00 00 04 b0 00 11 c2 29 00 00 00 00 00 02 c2 16 29 00 00 00 00 00 03 51 07 ff 29 00 00 00 00 00 04 b0 00 50 f4 29 00 00 00 00 00 02 f4 00 29 00 00 00 00 00 04 b0 00 c3 91 29 00 00 00 00 00 05 91 61 ff fd 00 29 00 00 00 00 00 04 b0 00 0d b1 29 00 00 00 00 00 02 b1 19];
 				samsung,gamma_mode2_hbm_tx_cmds_revE = [29 00 00 00 00 00 04 b0 00 0c c2 29 00 00 00 00 00 02 c2 60 29 00 00 00 00 00 02 53 e8 29 00 00 00 00 00 04 b0 00 11 c2 29 00 00 00 00 00 02 c2 16 29 00 00 00 00 00 03 51 07 ff 29 00 00 00 00 00 04 b0 00 50 f4 29 00 00 00 00 00 02 f4 00 29 00 00 00 00 00 04 b0 00 c3 91 29 00 00 00 00 00 05 91 61 ff fd 00 29 00 00 00 00 00 04 b0 00 0d b1 29 00 00 00 00 00 02 b1 19];
 				samsung,gamma_mode2_hbm_tx_cmds_revG = [29 00 00 00 00 00 04 b0 00 0c c2 29 00 00 00 00 00 02 c2 60 29 00 00 00 00 00 02 53 e8 29 00 00 00 00 00 04 b0 00 11 c2 29 00 00 00 00 00 02 c2 16 29 00 00 00 00 00 04 b0 00 c3 91 29 00 00 00 00 00 05 91 61 ff fd 00 29 00 00 00 00 00 04 b0 00 0d b1 29 01 00 00 01 00 02 b1 19 29 00 00 00 00 00 03 51 07 ff 29 00 00 00 00 00 04 b0 00 50 f4 29 00 00 00 00 00 02 f4 00];
-				samsung,vrr_gm2_gamma_comp_pre1_tx_cmds_revA = [29 00 00 00 00 00 03 f0 5a 5a 29 00 00 00 00 00 03 fc 5a 5a 29 00 00 00 00 00 0d 7c 00 01 00 1f 00 00 00 00 05 9f 0c 7f 29 00 00 00 00 00 04 b0 00 03 f2 29 00 00 00 00 00 02 f2 00 29 00 00 00 00 00 04 b0 00 44 f2 29 00 00 00 00 00 02 f2 00 29 00 00 00 00 00 03 60 08 00 29 00 00 00 00 00 04 b0 00 0c c2 29 00 00 00 00 00 03 c2 20 01 29 00 00 00 00 00 02 53 e0 29 00 00 00 00 00 03 51 07 ff 29 00 00 00 00 00 02 f7 0f 29 00 00 00 00 00 03 fc a5 a5 29 01 00 00 14 00 03 f0 a5 a5];
-				samsung,vrr_gm2_gamma_comp_pre2_tx_cmds_revA = <0x29000000 0x3f0 0x5a5a2900 0x0 0x3fc5a5a 0x29000000 0x253 0x20290000 0x3 0x5102dd29 0x0 0x2f70f 0x29000000 0x3fc 0xa5a52900 0x1400 0x3f0a5a5>;
 				samsung,vrr_gm2_gamma_comp2_tx_cmds_revA = <0x29000000 0x4b0 0x3e3c629 0x0 0x1bc600 0x0 0x0 0x0 0x0 0x0 0x0 0x290000 0x2e 0xc7000000 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x0 0x2900 0x0 0x4b00053 0xc7290100 0x10004 0xc700ffff>;
 				samsung,vrr_tx_cmds_revA = [29 00 00 00 00 00 04 b0 00 03 f2 29 00 00 00 00 00 02 f2 00 29 00 00 00 00 00 04 b0 00 44 f2 29 00 00 00 00 00 02 f2 00 29 00 00 00 00 00 03 60 08 00 29 00 00 00 00 00 04 b0 00 34 6a 29 00 00 00 00 00 02 6a 18 29 00 00 00 00 00 04 b0 03 e3 c6 29 00 00 00 00 00 02 c6 00 29 00 00 00 00 00 04 b0 00 53 c7 29 00 00 00 00 00 04 c7 00 ff ff 29 00 00 00 00 00 02 f7 0f];
 				samsung,vrr_tx_cmds_revB = <0x29000000 0x4b0 0xaac729 0x0 0x7c702 0x7020702 0x7290000 0x4 0xb00006bd 0x29000000 0x6bd 0x2c1400 0x1290000 0x2 0xbd012900 0x0 0x4b00017 0xbd290000 0x2 0xbd402900 0x0 0x4b00003 0xf2290000 0x2 0xf2002900 0x0 0x4b00006 0xf2290000 0x3 0xf2001029 0x0 0x4b000 0xdf22900 0x0 0x3f20010 0x29000000 0x4b0 0x44f229 0x0 0x2f200 0x29000000 0x360 0x8002900 0x0 0x4b00034 0x6a290000 0x2 0x6a002900 0x0 0x2b90929 0x0 0x4b003 0xe3c62900 0x0 0x2c60029 0x0 0x4b000 0x53c72900 0x0 0x2c70029 0x1000000 0x2f70f>;
@@ -11656,6 +11659,15 @@
 				samsung,esd-irq-gpio1 = <0xe 0x7 0x0>;
 				qcom,dsi-select-clocks = "mux_byte_clk0", "mux_pixel_clk0";
 				phandle = <0x5e>;
+
+				samsung,br_tables {
+
+					vrr120@0 {
+						samsung,flash_gamma_data_read_addr = <0x4 0x5 0x6>;
+						samsung,flash_table_hbm_gamma_offset = <0xe1604>;
+						samsung,flash_table_normal_gamma_offset = <0xe15be>;
+					};
+				};
 
 				qcom,mdss-dsi-display-timings {
 
@@ -13160,7 +13172,7 @@
 		target = <0xffffffff>;
 
 		__overlay__ {
-			wakeup-disabled-gpios = <0x7 0xb 0xf 0x23 0x24 0x28 0x2c 0x33 0x37 0x38 0x3b 0x3c 0x43 0x4b 0x5c 0x73 0x82 0x88 0x99 0x9b 0x9c 0x9d 0xa9 0xac 0xae 0xaf 0xb1 0xb4>;
+			wakeup-disabled-gpios = <0x7 0xb 0xf 0x1a 0x1b 0x1f 0x20 0x22 0x23 0x24 0x28 0x2b 0x2c 0x2f 0x33 0x37 0x38 0x3b 0x3c 0x43 0x4b 0x51 0x52 0x56 0x58 0x5a 0x5b 0x5c 0x60 0x62 0x63 0x73 0x75 0x82 0x88 0x99 0x9b 0x9c 0x9d 0xa5 0xa9 0xac 0xae 0xaf 0xb1 0xb4 0xb7 0xb9 0xbb 0xbe 0xc6 0xc8 0xca>;
 		};
 	};
 

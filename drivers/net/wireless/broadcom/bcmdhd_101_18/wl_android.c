@@ -56,7 +56,9 @@
 #ifdef DHDTCPACK_SUPPRESS
 #include <dhd_ip.h>
 #endif /* DHDTCPACK_SUPPRESS */
+#ifdef USE_NEW_RSPEC_DEFS
 #include <bcmwifi_rspec.h>
+#endif /* USE_NEW_RSPEC_DEFS */
 #include <dhd_linux.h>
 #include <bcmiov.h>
 #ifdef DHD_PKT_LOGGING
@@ -10411,8 +10413,17 @@ int wl_android_priv_cmd(struct net_device *net, struct ifreq *ifr)
 exit:
 #ifdef DHD_SEND_HANG_PRIVCMD_ERRORS
 	if (ret) {
-		/* Avoid incrementing priv_cmd_errors in case of unsupported feature */
-		if (ret != BCME_UNSUPPORTED) {
+		/* Avoid incrementing priv_cmd_errors in case of unsupported feature
+		* or BUSY state specific to TWT commands
+		*/
+		if (
+#ifdef WL_TWT
+			!((ret == BCME_BUSY) &&
+			((strnicmp(command, CMD_TWT_SETUP, strlen(CMD_TWT_SETUP)) == 0) ||
+			(strnicmp(command, CMD_TWT_TEARDOWN, strlen(CMD_TWT_TEARDOWN)) == 0) ||
+			(strnicmp(command, CMD_TWT_INFO, strlen(CMD_TWT_INFO)) == 0))) &&
+#endif /* WL_TWT */
+			(ret != BCME_UNSUPPORTED)) {
 			wl_android_check_priv_cmd_errors(net);
 		}
 	} else {
@@ -10424,6 +10435,8 @@ exit:
 	return ret;
 }
 #ifdef WLADPS_PRIVATE_CMD
+#define ADPS_MULTIMODE_PM2	3
+
 static int
 wl_android_set_adps_mode(struct net_device *dev, const char* string_num)
 {
@@ -10442,6 +10455,9 @@ wl_android_set_adps_mode(struct net_device *dev, const char* string_num)
 		WL_ERR(("wl_android_set_adps_mode: Invalid value %d.\n", adps_mode));
 		return -EINVAL;
 	}
+#ifdef WLADPS_MULTIMODE
+	adps_mode = adps_mode == 0 ? ADPS_MULTIMODE_PM2 : adps_mode;
+#endif /* WLADPS_MULTIMODE */
 
 	err = dhd_enable_adps(dhdp, adps_mode);
 	if (err != BCME_OK) {

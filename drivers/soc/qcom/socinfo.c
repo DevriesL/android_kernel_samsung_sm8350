@@ -1012,7 +1012,7 @@ static void socinfo_populate_sysfs(struct qcom_socinfo *qcom_socinfo)
 	msm_custom_socinfo_attrs[i++] = NULL;
 	qcom_socinfo->attr.custom_attr_group = &custom_soc_attr_group;
 }
-
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 static void socinfo_print(void)
 {
 	uint32_t f_maj = SOCINFO_MAJOR(socinfo_format);
@@ -1199,6 +1199,7 @@ static void socinfo_print(void)
 		break;
 	}
 }
+#endif
 
 static const char *socinfo_machine(unsigned int id)
 {
@@ -1258,7 +1259,9 @@ static int qcom_socinfo_probe(struct platform_device *pdev)
 	qsocinfo = qs;
 	init_rwsem(&qs->current_image_rwsem);
 	socinfo_populate_sysfs(qs);
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 	socinfo_print();
+#endif
 
 	qs->soc_dev = soc_device_register(&qs->attr);
 	if (IS_ERR(qs->soc_dev))

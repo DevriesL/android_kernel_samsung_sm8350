@@ -72,3 +72,10 @@ config AFC
 	  the MAX77705 AFC.
 	  To enable this driver,
 	  MUIC_MAX77705 should be enabled.
+
+config MUIC_QC_DISABLE
+	bool "Using QC charging"
+	depends on USE_MUIC
+	default n
+	help
+	  If you say yes here you will not get support for the QC charging

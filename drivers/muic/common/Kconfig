@@ -87,4 +87,3 @@ config MUIC_AFC_RETRY
 	default n
 	help
 	  If you say yes here you will get support for MUIC AFC retry feature.
-

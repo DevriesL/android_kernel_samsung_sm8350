@@ -386,8 +386,6 @@ char ss_cmd_set_prop_map[SS_CMD_PROP_SIZE][SS_CMD_PROP_STR_LEN] = {
 
 	"samsung,gm2_gamma_comp_revA",
 
-	"samsung,vrr_gm2_gamma_comp_pre1_tx_cmds_revA",
-	"samsung,vrr_gm2_gamma_comp_pre2_tx_cmds_revA",
 	"samsung,vrr_gm2_gamma_comp_tx_cmds_revA",
 	"samsung,vrr_gm2_gamma_comp2_tx_cmds_revA",
 
@@ -757,13 +755,6 @@ void ss_event_frame_update_post(struct samsung_display_driver_data *vdd)
 		if (vdd->panel_lpm.need_self_grid && ss_is_panel_lpm(vdd)) {
 			/* should distinguish display_on and self_grid_off with vsnyc */
 			/* delay 34ms in self_grid_off_revA cmds */
-			ss_send_cmd(vdd, TX_SELF_GRID_OFF);
-			LCD_ERR("self_grid [OFF]\n");
-		}
-
-		/* if panel needs black screen at gamma_comp_init, we need to grid_off after DISPLAY_ON */
-		if (vdd->br_info.gamma_comp_needs_self_grid) {
-			vdd->br_info.gamma_comp_needs_self_grid = false;
 			ss_send_cmd(vdd, TX_SELF_GRID_OFF);
 			LCD_ERR("self_grid [OFF]\n");
 		}
@@ -6669,9 +6660,6 @@ void ss_panel_vrr_switch(struct vrr_info *vrr)
 		vrr->cur_refresh_rate = adjusted_rr;
 		vrr->cur_sot_hs_mode = adjusted_hs;
 		vrr->cur_phs_mode = adjusted_phs;
-
-		if (vrr->send_vrr_te_time)
-			ss_wait_for_te_gpio(vdd, 1, 0);
 
 		if (vdd->br_info.common_br.finger_mask_hbm_on)
 			ss_brightness_dcs(vdd, 0, BACKLIGHT_FINGERMASK_ON_SUSTAIN);

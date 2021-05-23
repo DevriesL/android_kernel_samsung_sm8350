@@ -2069,7 +2069,6 @@ static int ss_vrr_init(struct vrr_info *vrr)
 	vrr->hs_nm_seq = HS_NM_OFF;
 	vrr->delayed_perf_normal = false;
 	vrr->skip_vrr_in_brightness = false;
-	vrr->send_vrr_te_time = true;
 
 	vrr->vrr_workqueue = create_singlethread_workqueue("vrr_workqueue");
 	INIT_WORK(&vrr->vrr_work, ss_panel_vrr_switch_work);
@@ -2359,44 +2358,44 @@ static void ss_print_gamma_comp(struct samsung_display_driver_data *vdd)
 	for (i = 0; i < GAMMA_V_SIZE; i++)
 		snprintf(pBuffer + strnlen(pBuffer, 256), 256, " %02x", HS120_HBM_V_TYPE_BUF[i]);
 	LCD_DEBUG("SET : %s\n", pBuffer);
-	memset(pBuffer, 0x00, 256);
 
-	/* debug print */
 	LCD_DEBUG("== HS120_NORMAL_V_TYPE_BUF ==\n");
 	memset(pBuffer, 0x00, 256);
 	for (i = 0; i < GAMMA_V_SIZE; i++)
 		snprintf(pBuffer + strnlen(pBuffer, 256), 256, " %02x", HS120_NORMAL_V_TYPE_BUF[i]);
 	LCD_DEBUG("SET : %s\n", pBuffer);
-	memset(pBuffer, 0x00, 256);
 
 	LCD_DEBUG("== HS96_V_TYPE_COMP ==\n");
-	memset(pBuffer, 0x00, 256);
 	for (i = 0; i < MTP_OFFSET_TAB_SIZE_96HS; i++) {
+		memset(pBuffer, 0x00, 256);
 		LCD_DEBUG("- COMP[%d]\n", i);
 		for (j = 0; j < GAMMA_V_SIZE; j++)
 			snprintf(pBuffer + strnlen(pBuffer, 256), 256, " %02x", HS96_V_TYPE_COMP[i][j]);
 		LCD_DEBUG("SET : %s\n", pBuffer);
-		memset(pBuffer, 0x00, 256);
 	}
 
-
 	LCD_DEBUG("== HS96_R_TYPE_COMP ==\n");
-	memset(pBuffer, 0x00, 256);
 	for (i = 0; i < MTP_OFFSET_TAB_SIZE_96HS; i++) {
+		memset(pBuffer, 0x00, 256);
 		LCD_DEBUG("- COMP[%d]\n", i);
 		for (j = 0; j < 70; j++)
 			snprintf(pBuffer + strnlen(pBuffer, 256), 256, " %02x", HS96_R_TYPE_COMP[i][j]);
 		LCD_DEBUG("SET : %s\n", pBuffer);
-		memset(pBuffer, 0x00, 256);
 	}
 }
 
 static int ss_gm2_gamma_comp_init(struct samsung_display_driver_data *vdd)
 {
-	u8 readbuf[84];
-	struct dsi_panel_cmd_set *rx_cmds;
+	char readbuf;
 	int i, j, m;
 	int val;
+	int start_addr, end_addr;
+	int loop_cnt;
+	int addr;
+	struct flash_raw_table *gamma_tbl;
+
+	gamma_tbl = vdd->br_info.br_tbl->gamma_tbl;
+
 	LCD_ERR("++\n");
 	if (vdd->panel_revision > 6) {/* E8 */
 		memcpy(MTP_OFFSET_96HS_VAL, MTP_OFFSET_96HS_VAL_revH, sizeof(MTP_OFFSET_96HS_VAL));
@@ -2413,46 +2412,65 @@ static int ss_gm2_gamma_comp_init(struct samsung_display_driver_data *vdd)
 	}
 
 	/***********************************************************/
-	/* PRE 1. SELF GRID TO SCREEN OFF / SET AS HBM & HS120     */
+	/* 1-1. [HBM/ NORMAL] Read HS120 ORIGINAL GAMMA Flash      */
 	/***********************************************************/
 
-	LCD_ERR("TX SELF_GRID ON/ HBM/ HS120\n");
-	ss_send_cmd(vdd, TX_VRR_GM2_GAMMA_COMP_PRE1);
-	vdd->br_info.gamma_comp_needs_self_grid = true;
+	ss_send_cmd(vdd, TX_FLASH_GAMMA_PRE1);
+	if (vdd->panel_revision > 6)/* E8 ~ */
+		start_addr = gamma_tbl->flash_table_hbm_gamma_offset;
+	else if (vdd->panel_revision > 3)/* E5 ~ E7 */
+		start_addr = 0xE15BE;/* 923070 */
+	else if (vdd->panel_revision > 1)/* E3 ~ E4 */
+		start_addr = 0xE1578;/* 923000 */
+	else
+		start_addr = 0xE1532;/* 922930 */
+	end_addr = start_addr + GAMMA_R_SIZE;
 
-	rx_cmds = ss_get_cmds(vdd, RX_SMART_DIM_MTP);
-	if (SS_IS_CMDS_NULL(rx_cmds)) {
-		LCD_ERR("No cmds for RX_SMART_DIM_MTP.. \n");
-		return -ENODEV;
+	for (loop_cnt = 0, addr = start_addr; addr < end_addr ; addr++) {
+		readbuf = flash_read_one_byte(vdd, addr);
+		HS120_HBM_R_TYPE_BUF[loop_cnt++] = readbuf;
+		LCD_INFO("0x%x ", readbuf);
 	}
-	/***********************************************************/
-	/* 1-1. [HBM] Read HS120/HBM ORIGINAL GAMMA MTP            */
-	/***********************************************************/
 
-	ss_panel_data_read(vdd, RX_SMART_DIM_MTP, readbuf, LEVEL1_KEY);
-	memcpy(&HS120_HBM_R_TYPE_BUF[0], readbuf, 84);
+	if (vdd->panel_revision > 6)/* E8 ~ */
+		start_addr = gamma_tbl->flash_table_normal_gamma_offset;
+	else if (vdd->panel_revision > 3)/* E5 ~ E7 */
+		start_addr = 0xE1532;/* 922930 */
+	else if (vdd->panel_revision > 1)/* E3 ~ E4 */
+		start_addr = 0xE1532;/* 922930 */
+	else
+		start_addr = 0xE14EC;/* 922860 */
+	end_addr = start_addr + GAMMA_R_SIZE;
+
+	for (loop_cnt = 0, addr = start_addr; addr < end_addr ; addr++) {
+		readbuf = flash_read_one_byte(vdd, addr);
+		HS120_NORMAL_R_TYPE_BUF[loop_cnt++] = readbuf;
+		LCD_INFO("0x%x ", readbuf);
+	}
+
+	ss_send_cmd(vdd, TX_FLASH_GAMMA_POST);
 
 	/***********************************************************/
 	/* 1-2. [HBM] translate Register type to V type            */
 	/***********************************************************/
 	j = 0;
 	for (i = 0; i < GAMMA_R_SIZE; ) {
-		if (i == 0 || i == GAMMA_R_SIZE - 6) {
+		if (i == 0 || i == GAMMA_R_SIZE - 5) {
 			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i], 0, 3) << 8)
-									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+1], 0, 7);
-			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+2], 0, 3) << 8)
+									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+2], 0, 7);
+			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+1], 4, 7) << 8)
 									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+3], 0, 7);
-			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+4], 0, 3) << 8)
-									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+5], 0, 7);
+			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+1], 0, 3) << 8)
+									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+4], 0, 7);
 		} else {
 			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i], 0, 2) << 8)
-									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+1], 0, 7);
-			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+2], 0, 2) << 8)
+									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+2], 0, 7);
+			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+1], 4, 6) << 8)
 									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+3], 0, 7);
-			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+4], 0, 2) << 8)
-									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+5], 0, 7);
+			HS120_HBM_V_TYPE_BUF[j++] = (GET_BITS(HS120_HBM_R_TYPE_BUF[i+1], 0, 2) << 8)
+									| GET_BITS(HS120_HBM_R_TYPE_BUF[i+4], 0, 7);
 		}
-		i = i + 6;
+		i = i + 5;
 	}
 
 	/***********************************************************/
@@ -2481,51 +2499,28 @@ static int ss_gm2_gamma_comp_init(struct samsung_display_driver_data *vdd)
 		}
 
 	/***********************************************************/
-	/* PRE 2. SET AS NORMAL/ HS120                             */
-	/***********************************************************/
-
-	LCD_INFO(" TX FORCE NORMAL ++\n");
-	ss_send_cmd(vdd, TX_VRR_GM2_GAMMA_COMP_PRE2);
-
-	/* bl_level will be updated from bd->props.brightness at ss_panel_on_post */
-	vdd->br_info.common_br.bl_level = 128;
-
-	/***********************************************************/
-	/* 2-1. [NORMAL] Read HS120/NORMAL ORIGINAL GAMMA MTP      */
-	/***********************************************************/
-
-	ss_panel_data_read(vdd, RX_SMART_DIM_MTP, readbuf, LEVEL1_KEY);
-	memcpy(&HS120_NORMAL_R_TYPE_BUF[0], readbuf, 84);
-
-	/***********************************************************/
 	/* 2-2. [NORMAL] translate Register type to V type 	       */
 	/***********************************************************/
 
 	/* HS120 */
 	j = 0;
 	for (i = 0; i < GAMMA_R_SIZE; ) {
-		if (i == 0 || i == GAMMA_R_SIZE - 6) {
-			HS120_NORMAL_V_TYPE_BUF[j++] =
-							(GET_BITS(HS120_NORMAL_R_TYPE_BUF[i], 0, 3) << 8)
-							| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+1], 0, 7);
-			HS120_NORMAL_V_TYPE_BUF[j++] =
-							(GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+2], 0, 3) << 8)
-							| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+3], 0, 7);
-			HS120_NORMAL_V_TYPE_BUF[j++] =
-							(GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+4], 0, 3) << 8)
-							| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+5], 0, 7);
+		if (i == 0 || i == GAMMA_R_SIZE - 5) {
+			HS120_NORMAL_V_TYPE_BUF[j++] = (GET_BITS(HS120_NORMAL_R_TYPE_BUF[i], 0, 3) << 8)
+									| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+2], 0, 7);
+			HS120_NORMAL_V_TYPE_BUF[j++] = (GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+1], 4, 7) << 8)
+									| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+3], 0, 7);
+			HS120_NORMAL_V_TYPE_BUF[j++] = (GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+1], 0, 3) << 8)
+									| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+4], 0, 7);
 		} else {
-			HS120_NORMAL_V_TYPE_BUF[j++] =
-							(GET_BITS(HS120_NORMAL_R_TYPE_BUF[i], 0, 2) << 8)
-							| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+1], 0, 7);
-			HS120_NORMAL_V_TYPE_BUF[j++] =
-							(GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+2], 0, 2) << 8)
-							| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+3], 0, 7);
-			HS120_NORMAL_V_TYPE_BUF[j++] =
-							(GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+4], 0, 2) << 8)
-							| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+5], 0, 7);
+			HS120_NORMAL_V_TYPE_BUF[j++] = (GET_BITS(HS120_NORMAL_R_TYPE_BUF[i], 0, 2) << 8)
+									| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+2], 0, 7);
+			HS120_NORMAL_V_TYPE_BUF[j++] = (GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+1], 4, 6) << 8)
+									| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+3], 0, 7);
+			HS120_NORMAL_V_TYPE_BUF[j++] = (GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+1], 0, 2) << 8)
+									| GET_BITS(HS120_NORMAL_R_TYPE_BUF[i+4], 0, 7);
 		}
-		i = i + 6;
+		i = i + 5;
 	}
 
 	/*************************************************************/

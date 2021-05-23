@@ -2287,8 +2287,8 @@ int cam_sensor_apply_settings(struct cam_sensor_ctrl_t *s_ctrl,
 					i2c_list);
 				if (rc < 0) {
 					CAM_ERR(CAM_SENSOR,
-						"Failed to apply settings: %d",
-						rc);
+						"Failed to apply settings: %d Sensor=0x%x",
+						rc, s_ctrl->sensordata->slave_info.sensor_id);
 					return rc;
 				}
 			}
@@ -2313,8 +2313,8 @@ int cam_sensor_apply_settings(struct cam_sensor_ctrl_t *s_ctrl,
 					i2c_list);
 				if (rc < 0) {
 					CAM_ERR(CAM_SENSOR,
-						"Failed to apply settings: %d",
-						rc);
+						"Failed to apply settings: %d Sensor=0x%x",
+						rc, s_ctrl->sensordata->slave_info.sensor_id);
 					return rc;
 				}
 			}

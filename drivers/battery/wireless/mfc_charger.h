@@ -1151,6 +1151,7 @@ struct mfc_charger_data {
 	mfc_charger_platform_data_t 	*pdata;
 	struct mutex io_lock;
 	struct mutex wpc_en_lock;
+	struct mutex fw_lock;
 	const struct firmware *firm_data_bin;
 
 	int wc_w_state;

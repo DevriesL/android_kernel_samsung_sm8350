@@ -349,6 +349,7 @@ struct cam_csiphy_info {
 	__u8     secure_mode;
 	__u64    settle_time;
 	__u64    data_rate;
+	__u16    shooting_mode;
 } __attribute__((packed));
 
 /**

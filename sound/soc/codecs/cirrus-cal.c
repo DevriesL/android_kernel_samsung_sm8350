@@ -602,6 +602,51 @@ skip_vimon_cal:
 }
 EXPORT_SYMBOL_GPL(cirrus_cal_apply);
 
+int cirrus_cal_read_temp(const char *mfd_suffix)
+{
+	struct cirrus_amp *amp;
+	int reg = 0, ret;
+	unsigned int halo_state;
+	unsigned int global_en;
+
+	amp = cirrus_get_amp_from_suffix(mfd_suffix);
+
+	if (!amp)
+		goto err;
+
+	regmap_read(amp->regmap, amp->global_en, &global_en);
+
+	if ((global_en & amp->global_en_mask) == 0)
+		goto err;
+
+	regmap_read(amp->regmap, amp->mbox_sts, &halo_state);
+
+	if (halo_state != CSPL_MBOX_STS_RUNNING)
+		goto err;
+
+	if (amp_group->cal_running)
+		goto err;
+
+	ret = cirrus_cal_logger_get_variable(amp,
+			CIRRUS_CAL_RTLOG_ID_TEMP,
+			&reg);
+	if (ret == 0) {
+		if (reg == 0)
+			cirrus_cal_logger_get_variable(amp,
+				CIRRUS_CAL_RTLOG_ID_TEMP,
+				&reg);
+		dev_info(amp_group->cal_dev,
+			"Read temp: %d.%04d degrees C\n",
+			reg >> CIRRUS_CAL_RTLOG_RADIX_TEMP,
+			(reg & (((1 << CIRRUS_CAL_RTLOG_RADIX_TEMP) - 1))) *
+			10000 / (1 << CIRRUS_CAL_RTLOG_RADIX_TEMP));
+		return (reg >> CIRRUS_CAL_RTLOG_RADIX_TEMP);
+	}
+err:
+	return -1;
+}
+EXPORT_SYMBOL_GPL(cirrus_cal_read_temp);
+
 static int cirrus_cal_start(void)
 {
 	int redc_cal_start_retries, vimon_cal_retries = 0;

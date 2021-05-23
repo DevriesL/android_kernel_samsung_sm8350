@@ -662,8 +662,6 @@ enum ss_dsi_cmd_set_type {
 
 	TX_GM2_GAMMA_COMP,
 
-	TX_VRR_GM2_GAMMA_COMP_PRE1,
-	TX_VRR_GM2_GAMMA_COMP_PRE2,
 	TX_VRR_GM2_GAMMA_COMP,
 	TX_VRR_GM2_GAMMA_COMP2,
 
@@ -1617,7 +1615,6 @@ struct ss_brightness_info {
 
 	int smart_dimming_loaded_dsi;
 	int smart_dimming_hmt_loaded_dsi;
-	bool gamma_comp_needs_self_grid;
 };
 
 enum SS_BRR_MODE {
@@ -1914,9 +1911,6 @@ struct vrr_info {
 	int te_mod_on;
 	int te_mod_divider;
 	int te_mod_cnt;
-
-	/* send vrr cmd at TE timing */
-	bool send_vrr_te_time;
 
 	enum VRR_GM2_GAMMA gm2_gamma;
 };
