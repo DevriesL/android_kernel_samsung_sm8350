@@ -155,3 +155,6 @@ build.txt
 
 # Python Cache
 __pycache__
+
+# Keep *.bin in /firmware
+!/firmware/**/*.bin
